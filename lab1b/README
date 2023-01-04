@@ -1,0 +1,28 @@
+NAME: Amy Seo
+EMAIL: amyseo@g.ucla.edu
+ID: 505328863
+SLIPDAYS: 0
+
+Included files:
+1. lab1b-client.c: Supports --port=portNumber, --compress, and --log=filename arguments.
+Creates a client that takes in input from stdin and sends it stdout and to the server via 
+a socket on a specified port number. Input that is received from the socket is written to 
+stdout. If --log=filename is entered, it logs all input from stdin after compression (if 
+applicable) and logs all output from the socket before decompresssing (if applicable).
+2. lab1b-server.c: Supports --port=portNumber and --compress arguments.
+Creates a server that communicates with the client on the specified port number through
+a socket. The server creates a child process that runs a bash shell. All input from the
+socket is sent to the child process, and all output from the child process (shell) is 
+sent back to the client via pipes and the socket. If compression is used, it decompresses
+input from the client and compresses output from the child process (shell).
+3. Makefile: has default, clean, dist, lab1b-client, and lab1b-server targets.
+Default builds both lab1b-client and lab1b-server executables.
+Clean removes all object files and tarball files from the directory.
+lab1b-client creates only the lab1b-client executable.
+lab1b-server creates only the lab1b-server executable.
+4. README: this file you're reading right now :D
+
+Sources:
+-zlib: https://www.zlib.net/zlib_how.html
+-zlib: https://refspecs.linuxbase.org/LSB_3.0.0/LSB-Core-generic/LSB-Core-generic/zlib-deflateend-1.html
+- Dis 1B Slides: https://ccle.ucla.edu/pluginfile.php/4087485/mod_resource/content/0/Discussion1B_Week3.pdf

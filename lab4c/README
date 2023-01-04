@@ -1,0 +1,17 @@
+NAME: Amy Seo
+EMAIL: amyseo@g.ucla.edu
+ID: 505328863
+SLIPDAYS: 0
+
+Included Files:
+1. lab4c_tcp.c, lab4c_tls.c: source files that build and run (with no errors or warnings) on a Beaglebone.
+2. Makefile: to build and test your application. The higher level targets should include:
+default ... build both versions of your program (compiling with the -Wall and -Wextra options).
+clean ... delete all programs and output created by the Makefile and restore the directory to its freshly untarred state.
+dist ... create the deliverable tarball.
+3. README: contains descriptions of each of the included files and any other comments on your submission that you would 
+like to bring to our attention (e.g., research, limitations, features, testing methodology).
+
+Sources:
+1. Discussion 1B slides: https://ccle.ucla.edu/pluginfile.php/4219278/mod_resource/content/0/Discussion1B_Week9.pdf
+2. https://linux.die.net/man/3/fdopen

@@ -1,0 +1,30 @@
+NAME: Amy Seo
+EMAIL: amyseo@g.ucla.edu
+ID: 505328863
+
+SLIPDAYS: 0
+
+Description of files:
+1.  lab0.c reads the contents of fd0 to fd1, taking in optional arguments for --input, --output, --segfault, and --catch. 
+    It copies the contents of fd0 with a read(2) and performs a write(2) to fd1. 
+    If no input and output arguments are entered, input is taken from standard input and outputted into standard output.
+2.  Makefile provides 4 targets: 
+    1) default: build the lab0 executable
+    2) dist: builds the distribution tarball
+    3) check: runs the smoke test script
+    4) clean: removes any files/executables created by Make
+3. smoke_tests.sh is a bash script that tests lab0 with these cases:
+    Case 1) Tests for correct input/output redirection and reading/writing when given a valid input file and output file
+    Case 2) Tests for returning with exit code 1 when given an invalid argument
+    Case 3) Tests for returning with exit code 2 when given an invalid input file
+    Case 4) Tests for returning with exit code 3 when given an invalid output file (e.g. no writing permissions)
+    Case 5) Tests for catching a segfault and returning with exit code 4
+    Case 6) Tests for creating a segfault
+4. backtrace.png: screenshot showing a segfault and associated stack-trace
+5. breakpoint.png: screenshot showing a breakpoint and variable inspection
+
+
+Sources:
+getopt_long(): https://stackoverflow.com/questions/7489093/getopt-long-proper-way-to-use-it
+discussion 1b slides: https://ccle.ucla.edu/pluginfile.php/4050083/mod_resource/content/0/Discussion1B_Week1.pdf
+

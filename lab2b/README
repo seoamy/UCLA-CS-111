@@ -1,0 +1,52 @@
+NAME: Amy Seo
+EMAIL: amyseo@g.ucla.edu
+ID: 505328863
+SLIPDAYS: 0
+
+Included Files:
+1. SortedList.h: Header file that describes the interface of our doubly linked list
+2. SortedList.c: Implements all the functions as described in SortedList.h
+3. lab2_list.c: Main program that parses arguments, creates all the threads and lists, and computes data for our lab
+4. Makefile: Supports build, tests, graphs, profile, dist, and clean targets
+5. lab2_list.csv: Lists all the data of our list test cases
+6. profile.out: Shows the pprof data we collected on our threadworker function
+7. lab2b_1.png: Graphs throughput for mutex and spin-lock sync options
+8. lab2b_2.png: Graphs the wait for lock time and average time per opreation for mutex locks
+9. lab2b_3.png: Graphs the threads and iterations that run without failure
+10. lab2b_4.png: Graphs the throughput of mutex synchronized sublists for variable number of sublists
+11. lab2b_5.png: Graphs the throughput of spin-lock synchronized sublists for variable number of sublists
+12. README: this file! 
+
+Questions:
+2.3.1 Most of the cycles in the 1 and 2-thread list tests are being spent on our SortedList operations.
+These are the most expensive parts of the code because there are only 1-2 threads so they won't be spending 
+much time, if any at all, on waiting/spinning, and will instead be more active in performing the list functions.
+In high-thread spin-lock tests, most of the time/cycles are being spent on spinning.
+In high-thread mutex tests, most of the time/cycles are being spent on context switches or list operations.
+When the list length is shorter, more time would be spent on context switches since they are expensive when putting
+threads to sleep. But if the list length is long, there would be more time being spent on the list functions compared
+to context switching.
+
+2.3.2 When the spin-lock version of the list exerciser is run with a large number of threads, the line in the thread_worker
+function that spins the lock is consuming the most cycles. This operation becomes so expensive with the large number of
+threads because each thread has to keep spinning in order to wait for other threads to finish before it gets its turn to run.
+
+2.3.3 The average lock-wait time rises dramatically with the number of contending threads because the higher the number 
+of threads, the more time each one has to wait before it gets a chance to run.
+Completion time per operation rises (less dramatically) with the number of contending threads because even though threads
+are waiting to get their turn, there will always be on running thread that is performing its part in the program. Our average
+time per operation for completion only calculates the total runtime of ALL threads, while the wait-lock time includes the times
+that EACH thread had to wait before getting its turn, contributing to a much more dramatic increase compared to the simple 
+average time per operation calculation. Due to these differences in calculations, it is possible for the wait time per operation
+to go up faster than the completion time per operation.
+
+2.3.4 As the number of lists increases, the throughput increases for the synchronized methods. As the number of lists further 
+increases, we would expect the throughput to continue increasing until it hits a certain threshhold where each node would be in
+its own sublist. At this point, there would be no way to increase efficiency and the number of sublists would not affect the 
+throughput as contention would become close to 0. The graphs do seem to show that the throughput of an N-way partitioned list
+should be equivalent to the throughput of a single list with fewer (1/N) threads. However, it is important to note that some 
+parts of our code, such as measuring the length of all the sublists, will always be prone to contention no matter the number of
+sublists we use. Because of this, we can't say that this statement will always be true.
+
+Sources:
+- discussion 1b slides: https://ccle.ucla.edu/pluginfile.php/4127386/mod_resource/content/0/Discussion1B_Week5.pdf

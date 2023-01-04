@@ -1,0 +1,61 @@
+NAME: Amy Seo
+EMAIL: amyseo@g.ucla.edu
+ID: 505328863
+SLIPDAYS: 0
+
+Included Files:
+1. lab2_add.c: Uses an add function to test a shared variable among threads to demonstrate race conditions.
+2. lab2_list.c: Uses the SortedList module to test inserting and deleting of nodes in a shared doubly linked list to demonstrate race conditions among threads.
+3. SortedList.h: Provided header file for SortedList
+4. SortedList.c: Implemented the 4 functions given in the header file
+5. lab2_add.csv: Data of all the test cases for the add function
+6. lab2_list.csv: Data of all the test cases for the list function
+7. lab2_add-1.png: Graphs cost per operation vs number of iterations for the add functions
+8. lab2_add-2.png: Graphs the cost of yielding
+9. lab2_add-3.png: Graphs the per operation cost vs number of iterations
+10. lab2_add-4.png: Graphs the threads and iterations that run without failure
+11. lab2_add-5.png: Graphs the per operation cost vs number of threads
+12. lab2_list-1.png: Graphs the cost per operation vs iterations
+13. lab2_list-2.png: Graphs the unprotected threads and iterations that run without failure
+14. lab2_list-3.png: Graphs the protected iterations that run without failure for locks and yields
+15. lab2_list-4.png: Graphs the scalability of synchronization mechanisms
+16. README: this file :D
+17. add_tests.sh: script of test cases for the add function
+18. list_tests.sh: script of test cases for the SortedLists
+19. lab2_add.gp: gnuplot script for add data
+20. lab2_list.gp: gnuplot script for list data
+21. Makefile: supports targets for build, tests, graphs, dists, and clean
+
+Questions:
+2.1.1 It takes many iterations before errors are seen because with a small number of iterations,
+    there are little to no conflicts which doesn't produce any race conditions.
+    A significantly smaller number of iterations seldom fails because there are little to no conflicts,
+    so the thread will be able to finish the add function call successfully without competing threads.
+2.1.2 Yield runs are so much slower because of the amount of context switches that occur to switch 
+    between threads, causing a lot of overhead and thus extra time to complete.
+    The additional time is going to perform the context switches.
+    It is not possible to get valid per-operation timings because we cannot predict how much time
+    it'll take to perform the context switches.
+2.1.3 The average cost per operation drops with increasing iterations because the overhead of
+    creating a new thread is overcome by the increasing number of iterations since running 
+    these iterations is faster.
+    To find the number of iterations to run (the "correct" cost), we can continue running these tests
+    as the number of iterations tends to infinity, to see what cost value it converges to.
+2.1.4 All the options perform similarly with a low number of threads because there is less overhead
+    with a smaller number of threads, so the locks don't have to wait so much causing similar performance.
+    As the number of threads increases, there are more threads that are locked and waiting, causing a
+    lot more overhead, which slows down the performance.
+2.2.1 In general, the time per operation increased for both. For the add functions in part 1, the cost of 
+    mutex-protected operations increased as the number of threads increased. The cost of mutex-protected 
+    operations in part 2 (linked list) grew at an even steeper slope because the cost of performing a
+    linked list operation takes more time than an add operation due to the number of critical sections
+    for inserting, looking up, deleting, and getting the length of our implemented linked list, which
+    makes the operation much more expensive.
+2.2.2 For both mutex and spin-locks, as the number of threads increases, the time per operation also
+    increases due to the extra overhead from the many context switches that are performed. Although both
+    mutex and spin-locks have a positive slope, spin-locks has a steeper curve due to its continuous
+    spinning that makes its operations much more expensive compared to mutex.
+
+Sources:
+- random string in C for keys: https://www.codeproject.com/Questions/640193/Random-string-in-language-C
+- Discussion 1B slides: https://ccle.ucla.edu/pluginfile.php/4109312/mod_resource/content/0/Discussion%201B%20Week4.pdf

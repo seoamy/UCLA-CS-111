@@ -1,0 +1,17 @@
+NAME: Amy Seo
+EMAIL: amyseo@g.ucla.edu
+ID: 505328863
+SLIPDAYS: 0
+
+Included files:
+1. lab1.c: Creates an i/o terminal that optionally supports a bash shell with the '--shell' argument. 
+    This shell is created by forking from the current parent process and using execlp. With the use of 2 pipes 
+    from the parent(terminal) to the child(shell) and from the child(shell) back to the parent(terminal), this program
+    forwards input to the shell to process commands, and send the results back to the terminal with the help of poll(2)
+    to facilitate handling input/output between processes through the respective pipes.
+2. Makefile: Supports default, dist, and clean targets.
+3. README: This current file which provides file descriptions and sources.
+
+Sources:
+- setting noncanonical mode: https://www.gnu.org/software/libc/manual/html_node/Noncanon-Example.html
+- discussion 1b slides: https://ccle.ucla.edu/pluginfile.php/4070819/mod_resource/content/0/Discussion1B_Week2.pdf

@@ -1,0 +1,18 @@
+NAME: Amy Seo
+EMAIL: amyseo@ucla.edu
+ID: 505328863
+SLIPDAYS: 0
+
+Beaglebone serial number: BBGW18040126
+MAC: 2CF7F1068F7D
+
+Inlcuded Files:
+1. my_beaglebone.jpg: selfie of me holding Beaglebone
+2. connected.png: screenshot showing beaglebone has name and
+network acesss
+3. copy.png: screenshot of succesfully copying helloWorld.c
+from local machine to Beaglebone
+4. build_run.png: screenshot of building and running helloWorld
+5. git.png: screenshot of installing git and cloning repo
+6. Makefile: creates tar file 
+7. README: this file!

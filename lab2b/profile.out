@@ -1,0 +1,304 @@
+Total: 347 samples
+     315  90.8%  90.8%      347 100.0% thread_worker
+       6   1.7%  92.5%        6   1.7% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:204
+       4   1.2%  93.7%        4   1.2% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1734
+       4   1.2%  94.8%       18   5.2% SortedList_insert
+       3   0.9%  95.7%        3   0.9% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:203
+       3   0.9%  96.5%        3   0.9% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1734
+       3   0.9%  97.4%        3   0.9% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1734
+       3   0.9%  98.3%       14   4.0% SortedList_lookup
+       2   0.6%  98.8%        2   0.6% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:206
+       1   0.3%  99.1%        1   0.3% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:161
+       1   0.3%  99.4%        1   0.3% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:164
+       1   0.3%  99.7%        1   0.3% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:212
+       1   0.3% 100.0%        1   0.3% _init
+       0   0.0% 100.0%      347 100.0% ?? /usr/src/debug////////glibc-2.17-c758a686/misc/../sysdeps/unix/sysv/linux/x86_64/clone.S:118
+       0   0.0% 100.0%      347 100.0% start_thread
+ROUTINE ====================== thread_worker in /w/home.27/cs/ugrad/yoonji/cs111/lab2/lab2b/lab2_list.c
+   315    347 Total samples (flat / cumulative)
+     .      .   95:     }
+     .      .   96:     cur_key[KEY_LENGTH] = '\0';
+     .      .   97:     return cur_key;
+     .      .   98: }
+     .      .   99: 
+---
+     .      .  100: void* thread_worker(void *arg) {
+     .      .  101:     long startIndex = *((int*)arg);
+     .      .  102:     long total = startIndex + num_itr;
+     .      .  103: 
+     .      .  104:     // insert the elements into the list
+     .      .  105:      switch(sync_opt) {
+     .      .  106:         case 'm':
+     .      .  107:             // if (pthread_mutex_lock(&mutex) != 0) {
+     .      .  108:             //     fprintf(stderr, "%s\n","ERROR: Failed to lock mutex.");
+     .      .  109:             //     exit(1);
+     .      .  110:             // }
+     .      .  111:             for(long i = startIndex; i < total; i++) {
+     .      .  112:                 pthread_mutex_lock(&mutex);
+     .      .  113:                 SortedList_insert(&head, &list[i]);
+     .      .  114:                 pthread_mutex_unlock(&mutex);
+     .      .  115:             }
+     .      .  116:             // if (pthread_mutex_unlock(&mutex) != 0) {
+     .      .  117:             //     fprintf(stderr, "%s\n","ERROR: Failed to unlock mutex.");
+     .      .  118:             //     exit(1);
+     .      .  119:             // }    
+     .      .  120:             break;
+     .      .  121:         case 's':
+     .      .  122:             // while (__sync_lock_test_and_set(&lock, 1));
+     .      .  123:             for(long i = startIndex; i < total; i++) {
+   239    239  124:                 while (__sync_lock_test_and_set(&lock, 1));
+     .     18  125:                 SortedList_insert(&head, &list[i]);
+     .      .  126:                 __sync_lock_release(&lock);
+     .      .  127:             }
+     .      .  128:             // __sync_lock_release(&lock);
+     .      .  129:             break;
+     .      .  130:         default:
+     .      .  131:             for(long i = startIndex; i < total; i++) {
+     .      .  132:                 SortedList_insert(&head, &list[i]);
+     .      .  133:             }
+     .      .  134:             break;
+     .      .  135:         }
+     .      .  136: 
+     .      .  137:     // get length of list
+     .      .  138:     long length = 0;
+     .      .  139:     switch(sync_opt) {
+     .      .  140:         case 'm':
+     .      .  141:             if (pthread_mutex_lock(&mutex) != 0) {
+     .      .  142:                 fprintf(stderr, "%s\n","ERROR: Failed to lock mutex.");
+     .      .  143:                 exit(1);
+     .      .  144:             }
+     .      .  145:             length = SortedList_length(&head);
+     .      .  146:             if (pthread_mutex_unlock(&mutex) != 0) {
+     .      .  147:                 fprintf(stderr, "%s\n","ERROR: Failed to unlock mutex.");
+     .      .  148:                 exit(1);
+     .      .  149:             }
+     .      .  150:             break;
+     .      .  151:         case 's':
+     .      .  152:             while (__sync_lock_test_and_set(&lock, 1));
+     .      .  153:             length = SortedList_length(&head);
+     .      .  154:             __sync_lock_release(&lock);
+     .      .  155:             break;
+     .      .  156:         default:
+     .      .  157:             length = SortedList_length(&head);
+     .      .  158:             break;
+     .      .  159:     }
+     .      .  160: 
+     .      .  161:     if (length < 0) {
+     .      .  162:         fprintf(stderr, "%s\n", "ERROR: List length is less than 0.");
+     .      .  163:         exit(2);
+     .      .  164:     }
+     .      .  165: 
+     .      .  166:     // delete the list   
+     .      .  167:     switch(sync_opt) {
+     .      .  168:         case 'm':
+     .      .  169:             // if (pthread_mutex_lock(&mutex) != 0) {
+     .      .  170:             //     fprintf(stderr, "%s\n","ERROR: Failed to lock mutex.");
+     .      .  171:             //     exit(1);
+     .      .  172:             // }; 
+     .      .  173:             for(int i = startIndex; i < total; i++) {
+     .      .  174:                 pthread_mutex_lock(&mutex);
+     .      .  175:                 SortedListElement_t *tmp_m = SortedList_lookup(&head, list[i].key);
+     .      .  176:                 if (tmp_m == NULL) {
+     .      .  177:                     fprintf(stderr, "%s\n", "ERROR: Could not lookup list element.");
+     .      .  178:                     exit(2);
+     .      .  179:                 }
+     .      .  180:                 else {
+     .      .  181:                     if (SortedList_delete(tmp_m)) {
+     .      .  182:                         fprintf(stderr, "%s\n", "ERROR: Failed to delete element in list.");
+     .      .  183:                         exit(2);
+     .      .  184:                     }
+     .      .  185:                 }
+     .      .  186:                 pthread_mutex_unlock(&mutex);
+     .      .  187:             }
+     .      .  188:             // if (pthread_mutex_unlock(&mutex) != 0){
+     .      .  189:             //     fprintf(stderr, "%s\n","ERROR: Failed to unlock mutex.");
+     .      .  190:             //     exit(1);
+     .      .  191:             // }
+     .      .  192:             break;
+     .      .  193:         case 's':
+     .      .  194:             // while(__sync_lock_test_and_set (&lock, 1));
+     .      .  195:             for(int i = startIndex; i < total; i++) {
+    76     76  196:                 while(__sync_lock_test_and_set (&lock, 1));
+     .     14  197:                 SortedListElement_t *tmp_s = SortedList_lookup(&head, list[i].key);
+     .      .  198:                 if (tmp_s == NULL) {
+     .      .  199:                     fprintf(stderr, "%s\n", "ERROR: Could not lookup list element.");
+     .      .  200:                     exit(2);
+     .      .  201:                 }
+     .      .  202:                 else {
+     .      .  203:                     if (SortedList_delete(tmp_s)) {
+     .      .  204:                         fprintf(stderr, "%s\n", "ERROR: Failed to delete element in list.");
+     .      .  205:                         exit(2);
+     .      .  206:                     }
+     .      .  207:                 }
+     .      .  208:                 __sync_lock_release(&lock);
+     .      .  209:             }
+     .      .  210:             // __sync_lock_release(&lock);
+     .      .  211:             break;
+     .      .  212:         default: ;
+     .      .  213:              for(int i = startIndex; i < total; i++) {
+     .      .  214:                 SortedListElement_t *tmp = SortedList_lookup(&head, list[i].key);
+     .      .  215:                 if (tmp == NULL) {
+     .      .  216:                     fprintf(stderr, "%s\n", "ERROR: Could not lookup list element.");
+     .      .  217:                     exit(2);
+     .      .  218:                 }
+     .      .  219:                 else {
+     .      .  220:                     if (SortedList_delete(tmp)) {
+     .      .  221:                         fprintf(stderr, "%s\n", "ERROR: Failed to delete element in list.");
+     .      .  222:                         exit(2);
+     .      .  223:                     }
+     .      .  224:                 }
+     .      .  225:              }
+     .      .  226:             break;
+     .      .  227:     }
+     .      .  228:     return NULL;
+     .      .  229: }
+---
+     .      .  230: 
+     .      .  231: int main (int argc, char **argv) {
+     .      .  232:     int opt;
+     .      .  233:     unsigned long total_runtime;
+     .      .  234:     struct timespec begin, end;
+ROUTINE ====================== thread_worker in /w/home.27/cs/ugrad/yoonji/cs111/lab2/lab2b/lab2_list.c
+   315    347 Total samples (flat / cumulative)
+     .      .   95:     }
+     .      .   96:     cur_key[KEY_LENGTH] = '\0';
+     .      .   97:     return cur_key;
+     .      .   98: }
+     .      .   99: 
+---
+     .      .  100: void* thread_worker(void *arg) {
+     .      .  101:     long startIndex = *((int*)arg);
+     .      .  102:     long total = startIndex + num_itr;
+     .      .  103: 
+     .      .  104:     // insert the elements into the list
+     .      .  105:      switch(sync_opt) {
+     .      .  106:         case 'm':
+     .      .  107:             // if (pthread_mutex_lock(&mutex) != 0) {
+     .      .  108:             //     fprintf(stderr, "%s\n","ERROR: Failed to lock mutex.");
+     .      .  109:             //     exit(1);
+     .      .  110:             // }
+     .      .  111:             for(long i = startIndex; i < total; i++) {
+     .      .  112:                 pthread_mutex_lock(&mutex);
+     .      .  113:                 SortedList_insert(&head, &list[i]);
+     .      .  114:                 pthread_mutex_unlock(&mutex);
+     .      .  115:             }
+     .      .  116:             // if (pthread_mutex_unlock(&mutex) != 0) {
+     .      .  117:             //     fprintf(stderr, "%s\n","ERROR: Failed to unlock mutex.");
+     .      .  118:             //     exit(1);
+     .      .  119:             // }    
+     .      .  120:             break;
+     .      .  121:         case 's':
+     .      .  122:             // while (__sync_lock_test_and_set(&lock, 1));
+     .      .  123:             for(long i = startIndex; i < total; i++) {
+   239    239  124:                 while (__sync_lock_test_and_set(&lock, 1));
+     .     18  125:                 SortedList_insert(&head, &list[i]);
+     .      .  126:                 __sync_lock_release(&lock);
+     .      .  127:             }
+     .      .  128:             // __sync_lock_release(&lock);
+     .      .  129:             break;
+     .      .  130:         default:
+     .      .  131:             for(long i = startIndex; i < total; i++) {
+     .      .  132:                 SortedList_insert(&head, &list[i]);
+     .      .  133:             }
+     .      .  134:             break;
+     .      .  135:         }
+     .      .  136: 
+     .      .  137:     // get length of list
+     .      .  138:     long length = 0;
+     .      .  139:     switch(sync_opt) {
+     .      .  140:         case 'm':
+     .      .  141:             if (pthread_mutex_lock(&mutex) != 0) {
+     .      .  142:                 fprintf(stderr, "%s\n","ERROR: Failed to lock mutex.");
+     .      .  143:                 exit(1);
+     .      .  144:             }
+     .      .  145:             length = SortedList_length(&head);
+     .      .  146:             if (pthread_mutex_unlock(&mutex) != 0) {
+     .      .  147:                 fprintf(stderr, "%s\n","ERROR: Failed to unlock mutex.");
+     .      .  148:                 exit(1);
+     .      .  149:             }
+     .      .  150:             break;
+     .      .  151:         case 's':
+     .      .  152:             while (__sync_lock_test_and_set(&lock, 1));
+     .      .  153:             length = SortedList_length(&head);
+     .      .  154:             __sync_lock_release(&lock);
+     .      .  155:             break;
+     .      .  156:         default:
+     .      .  157:             length = SortedList_length(&head);
+     .      .  158:             break;
+     .      .  159:     }
+     .      .  160: 
+     .      .  161:     if (length < 0) {
+     .      .  162:         fprintf(stderr, "%s\n", "ERROR: List length is less than 0.");
+     .      .  163:         exit(2);
+     .      .  164:     }
+     .      .  165: 
+     .      .  166:     // delete the list   
+     .      .  167:     switch(sync_opt) {
+     .      .  168:         case 'm':
+     .      .  169:             // if (pthread_mutex_lock(&mutex) != 0) {
+     .      .  170:             //     fprintf(stderr, "%s\n","ERROR: Failed to lock mutex.");
+     .      .  171:             //     exit(1);
+     .      .  172:             // }; 
+     .      .  173:             for(int i = startIndex; i < total; i++) {
+     .      .  174:                 pthread_mutex_lock(&mutex);
+     .      .  175:                 SortedListElement_t *tmp_m = SortedList_lookup(&head, list[i].key);
+     .      .  176:                 if (tmp_m == NULL) {
+     .      .  177:                     fprintf(stderr, "%s\n", "ERROR: Could not lookup list element.");
+     .      .  178:                     exit(2);
+     .      .  179:                 }
+     .      .  180:                 else {
+     .      .  181:                     if (SortedList_delete(tmp_m)) {
+     .      .  182:                         fprintf(stderr, "%s\n", "ERROR: Failed to delete element in list.");
+     .      .  183:                         exit(2);
+     .      .  184:                     }
+     .      .  185:                 }
+     .      .  186:                 pthread_mutex_unlock(&mutex);
+     .      .  187:             }
+     .      .  188:             // if (pthread_mutex_unlock(&mutex) != 0){
+     .      .  189:             //     fprintf(stderr, "%s\n","ERROR: Failed to unlock mutex.");
+     .      .  190:             //     exit(1);
+     .      .  191:             // }
+     .      .  192:             break;
+     .      .  193:         case 's':
+     .      .  194:             // while(__sync_lock_test_and_set (&lock, 1));
+     .      .  195:             for(int i = startIndex; i < total; i++) {
+    76     76  196:                 while(__sync_lock_test_and_set (&lock, 1));
+     .     14  197:                 SortedListElement_t *tmp_s = SortedList_lookup(&head, list[i].key);
+     .      .  198:                 if (tmp_s == NULL) {
+     .      .  199:                     fprintf(stderr, "%s\n", "ERROR: Could not lookup list element.");
+     .      .  200:                     exit(2);
+     .      .  201:                 }
+     .      .  202:                 else {
+     .      .  203:                     if (SortedList_delete(tmp_s)) {
+     .      .  204:                         fprintf(stderr, "%s\n", "ERROR: Failed to delete element in list.");
+     .      .  205:                         exit(2);
+     .      .  206:                     }
+     .      .  207:                 }
+     .      .  208:                 __sync_lock_release(&lock);
+     .      .  209:             }
+     .      .  210:             // __sync_lock_release(&lock);
+     .      .  211:             break;
+     .      .  212:         default: ;
+     .      .  213:              for(int i = startIndex; i < total; i++) {
+     .      .  214:                 SortedListElement_t *tmp = SortedList_lookup(&head, list[i].key);
+     .      .  215:                 if (tmp == NULL) {
+     .      .  216:                     fprintf(stderr, "%s\n", "ERROR: Could not lookup list element.");
+     .      .  217:                     exit(2);
+     .      .  218:                 }
+     .      .  219:                 else {
+     .      .  220:                     if (SortedList_delete(tmp)) {
+     .      .  221:                         fprintf(stderr, "%s\n", "ERROR: Failed to delete element in list.");
+     .      .  222:                         exit(2);
+     .      .  223:                     }
+     .      .  224:                 }
+     .      .  225:              }
+     .      .  226:             break;
+     .      .  227:     }
+     .      .  228:     return NULL;
+     .      .  229: }
+---
+     .      .  230: 
+     .      .  231: int main (int argc, char **argv) {
+     .      .  232:     int opt;
+     .      .  233:     unsigned long total_runtime;
+     .      .  234:     struct timespec begin, end;
